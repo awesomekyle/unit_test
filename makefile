@@ -1,4 +1,3 @@
-
 #
 # Output files
 #
@@ -18,9 +17,17 @@ TEST_SRCS = test/main.c
 #
 # Compilation control
 #
-INCLUDES += -Isrc
-CFLAGS += -MMD -MP -g $(INCLUDES)
-CXXFLAGS += -MMD -MP -g $(INCLUDES)
+INCLUDES 	+= 	-Isrc
+DEFINES		+=
+
+C_STD	= -std=c89
+CXX_STD	= -std=c++98
+WARNINGS	+=	 -Wall -Wextra -pedantic -Wshadow -Wpointer-arith \
+				 -Wwrite-strings  -Wredundant-decls -Winline -Wno-long-long \
+				 -Wuninitialized -Wconversion -Werror
+CPPFLAGS += -MMD -MP $(DEFINES) $(INCLUDES) $(WARNINGS) -g
+CFLAGS += $(CPPFLAGS) -Wmissing-declarations -Wstrict-prototypes -Wnested-externs -Wmissing-prototypes $(C_STD)
+CXXFLAGS += $(CPPFLAGS) $(CXX_STD)
 
 #############################################
 OBJECTS = $(SRCS:.c=.o)

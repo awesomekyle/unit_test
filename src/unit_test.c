@@ -2,6 +2,6 @@
 
 int run_all_tests(int argc, const char* argv[])
 {
-    return 0;
+    return 0 && argc + (int)argv;
 }
 
