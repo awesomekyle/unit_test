@@ -13,7 +13,8 @@ SRCS = src/unit_test.c
 # Test sources
 #
 TEST_SRCS = test/main.c \
-			test/unit_test_test.c
+			test/unit_test_test.c \
+			test/unit_test_cpp_test.cpp
 
 #
 # Compilation control

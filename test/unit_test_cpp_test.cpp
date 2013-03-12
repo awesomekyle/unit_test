@@ -1,16 +1,15 @@
-/** @file unit_test_test.cpp
+/** @file unit_test_cpp_test.cpp
  *  @copyright Copyright (c) 2013 Kyle Weicht. All rights reserved.
  */
 #include "unit_test.h"
 
-#include <stdio.h>
-
-TEST(MakeTest)
+TEST(AutoRegisterTest)
 {
 }
-IGNORE_TEST(FailTest)
+
+IGNORE_TEST(IgnoreCPPTest)
 {
-    FAIL("Failure!");
+    FAIL("C++ failure");
 }
 TEST(BoolChecks)
 {
@@ -41,14 +40,4 @@ TEST(CheckPointerEqual)
     CHECK_NOT_EQUAL_POINTER(a, c);
     CHECK_NULL(d);
     CHECK_NOT_NULL(a);
-}
-
-TEST_MODULE(unit_test)
-{
-    REGISTER_TEST(MakeTest);
-    REGISTER_TEST(FailTest);
-    REGISTER_TEST(BoolChecks);
-    REGISTER_TEST(CheckIntEqual);
-    REGISTER_TEST(CheckIntLTGT);
-    REGISTER_TEST(CheckPointerEqual);
 }
