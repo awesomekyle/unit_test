@@ -13,6 +13,8 @@ CXXFLAGS += -MMD -MP -g -Isrc
 
 _DEPS := $(OBJECTS:.o=.d) $(TEST_OBJECTS:.o=.d)
 
+.PHONY: clean test
+
 all: $(TARGET) test
 
 $(LIBRARY) : $(OBJECTS)
