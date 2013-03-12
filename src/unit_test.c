@@ -151,6 +151,19 @@ void _check_greater_than_equal_float(const char* file, int line, double left, do
         _fail(file,line, "%f is not greater than %f", left, right);
 }
 
+/* string checks */
+void _check_equal_string(const char* file, int line, const char* expected, const char* actual)
+{
+    if(strcmp(expected, actual) != 0)
+        _fail(file,line, "Expected: %s  Actual: %s", expected, actual);
+}
+void _check_not_equal_string(const char* file, int line, const char* expected, const char* actual)
+{
+    if(strcmp(expected, actual) == 0)
+        _fail(file,line, "Strings are equal: %s", actual);
+}
+
+
 int _register_test(test_func_t* func)
 {
     _test_funcs[_num_tests] = func;

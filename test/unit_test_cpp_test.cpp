@@ -55,3 +55,11 @@ TEST(CheckFloatLTGT)
     CHECK_GREATER_THAN_EQUAL(-564.345f, -564.345f);
     CHECK_GREATER_THAN_EQUAL(-564.324f, -664.873f);
 }
+TEST(CheckString)
+{
+    const char* a = "Hello World";
+    const char* b = "Hello World";
+    const char* c = "Goodbye world";
+    CHECK_EQUAL_STRING(a, b);
+    CHECK_NOT_EQUAL_STRING(a, c);
+}

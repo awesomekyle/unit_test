@@ -126,6 +126,15 @@ void _check_greater_than_float(const char* file, int line, double left, double r
 void _check_less_than_equal_float(const char* file, int line, double left, double right);
 void _check_greater_than_equal_float(const char* file, int line, double left, double right);
 
+/* string */
+#define CHECK_EQUAL_STRING(expected, actual) \
+    _check_equal_string(__FILE__, __LINE__, expected, actual)
+#define CHECK_NOT_EQUAL_STRING(expected, actual) \
+    _check_not_equal_string(__FILE__, __LINE__, expected, actual)
+
+void _check_equal_string(const char* file, int line, const char* expected, const char* actual);
+void _check_not_equal_string(const char* file, int line, const char* expected, const char* actual);
+
 
 /** @brief Runs all tests. Returns number of failed tests (0 for success).
  *  @return Number of failed tests. 0 for success
