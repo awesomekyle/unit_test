@@ -1,5 +1,6 @@
 # Object files
 *.o
+*.d
 
 # Libraries
 *.lib
@@ -15,3 +16,6 @@
 *.exe
 *.out
 *.app
+
+# Custom
+test_unit_test
