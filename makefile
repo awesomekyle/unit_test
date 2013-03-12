@@ -12,7 +12,8 @@ SRCS = src/unit_test.c
 #
 # Test sources
 #
-TEST_SRCS = test/main.c
+TEST_SRCS = test/main.c \
+			test/unit_test_test.c
 
 #
 # Compilation control
@@ -30,8 +31,8 @@ CFLAGS += $(CPPFLAGS) -Wmissing-declarations -Wstrict-prototypes -Wnested-extern
 CXXFLAGS += $(CPPFLAGS) $(CXX_STD)
 
 #############################################
-OBJECTS = $(SRCS:.c=.o)
-TEST_OBJECTS = $(TEST_SRCS:.c=.o)
+OBJECTS = $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRCS)))
+TEST_OBJECTS = $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(TEST_SRCS)))
 ############################################
 
 ifndef V
@@ -44,7 +45,7 @@ _DEPS := $(OBJECTS:.o=.d) $(TEST_OBJECTS:.o=.d)
 
 all: $(TARGET) test
 
-$(LIBRARY) : $(OBJECTS)
+lib $(LIBRARY) : $(OBJECTS)
 	@echo "Archiving $@..."
 	$(SILENT) ar rcs $(LIBRARY) $(OBJECTS)
 
