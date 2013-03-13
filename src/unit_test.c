@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <math.h>
 
 #ifndef PRId64
     #define PRId64 "ld"
@@ -19,6 +20,8 @@
 /* Constants
  */
 enum {MAX_TESTS = 4096};
+static const float EPSILON = 0.001f;
+
 typedef enum {
     kResultPass,
     kResultFail,
@@ -116,6 +119,37 @@ void _check_not_null(const char* file, int line, const void* pointer)
         _fail(file,line, "Pointer is NULL");
 }
 
+/* float checks */
+void _check_equal_float(const char* file, int line, double expected, double actual)
+{
+    if(fabs(expected - actual) > EPSILON)
+        _fail(file,line, "Expected: %f  Actual: %f", expected, actual);
+}
+void _check_not_equal_float(const char* file, int line, double expected, double actual)
+{
+    if(fabs(expected - actual) < EPSILON)
+        _fail(file,line, "Actual value equals expected: %f", actual);
+}
+void _check_less_than_float(const char* file, int line, double left, double right)
+{
+    if(left >= right)
+        _fail(file,line, "%f is not less than %f", left, right);
+}
+void _check_greater_than_float(const char* file, int line, double left, double right)
+{
+    if(left <= right)
+        _fail(file,line, "%f is not greater than %f", left, right);
+}
+void _check_less_than_equal_float(const char* file, int line, double left, double right)
+{
+    if(left > right)
+        _fail(file,line, "%f is not less than %f", left, right);
+}
+void _check_greater_than_equal_float(const char* file, int line, double left, double right)
+{
+    if(left < right)
+        _fail(file,line, "%f is not greater than %f", left, right);
+}
 
 int _register_test(test_func_t* func)
 {

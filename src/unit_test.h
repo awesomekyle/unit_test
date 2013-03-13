@@ -105,6 +105,28 @@ void _check_not_equal_pointer(const char* file, int line, const void* expected, 
 void _check_null(const char* file, int line, const void* pointer);
 void _check_not_null(const char* file, int line, const void* pointer);
 
+/* float */
+#define CHECK_EQUAL_FLOAT(expected, actual) \
+    _check_equal_float(__FILE__, __LINE__, (double)expected, (double)actual)
+#define CHECK_NOT_EQUAL_FLOAT(expected, actual) \
+    _check_not_equal_float(__FILE__, __LINE__, (double)expected, (double)actual)
+#define CHECK_LESS_THAN_FLOAT(left, right) \
+    _check_less_than_float(__FILE__, __LINE__, (double)left, (double)right)
+#define CHECK_GREATER_THAN_FLOAT(left, right) \
+    _check_greater_than_float(__FILE__, __LINE__, (double)left, (double)right)
+#define CHECK_LESS_THAN_EQUAL_FLOAT(left, right) \
+    _check_less_than_equal_float(__FILE__, __LINE__, (double)left, (double)right)
+#define CHECK_GREATER_THAN_EQUAL_FLOAT(left, right) \
+    _check_greater_than_equal_float(__FILE__, __LINE__, (double)left, (double)right)
+
+void _check_equal_float(const char* file, int line, double expected, double actual);
+void _check_not_equal_float(const char* file, int line, double expected, double actual);
+void _check_less_than_float(const char* file, int line, double left, double right);
+void _check_greater_than_float(const char* file, int line, double left, double right);
+void _check_less_than_equal_float(const char* file, int line, double left, double right);
+void _check_greater_than_equal_float(const char* file, int line, double left, double right);
+
+
 /** @brief Runs all tests. Returns number of failed tests (0 for success).
  *  @return Number of failed tests. 0 for success
  */
