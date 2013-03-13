@@ -33,9 +33,10 @@ TEST(CheckIntLTGT)
 }
 TEST(CheckPointerEqual)
 {
-    int* a = (int*)0xDEADBEEF;
-    int* b = (int*)0xDEADBEEF;
-    int* c = (int*)0xBEEFDEAD;
+    int i[3];
+    int* a = i+0;
+    int* b = i+0;
+    int* c = i+2;
     int* d = NULL;
     CHECK_EQUAL_POINTER(a, b);
     CHECK_NOT_EQUAL_POINTER(a, c);
