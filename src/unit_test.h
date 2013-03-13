@@ -24,6 +24,28 @@ typedef void (test_func_t)(void);
         static int _##test_name##_register = _register_test(&_ignore_test); \
         void TEST_##test_name(void)
 
+    #define TEST_FIXTURE(fixture, test_name)                                                           \
+        struct TEST_##test_name : public fixture {                                                     \
+            void test(void);                                                                           \
+        };                                                                                             \
+        static void TEST_##fixture##_##test_name(void) {                                               \
+            TEST_##test_name test;                                                                     \
+            test.test();                                                                               \
+        }                                                                                              \
+        static int _##fixture##_##test_name##_register = _register_test(&TEST_##fixture##_##test_name); \
+        void TEST_##test_name::test(void )
+
+    #define IGNORE_TEST_FIXTURE(fixture, test_name)                                                    \
+        struct TEST_##test_name : public fixture {                                                     \
+            void test(void);                                                                           \
+        };                                                                                             \
+        static void TEST_##fixture##_##test_name(void) {                                               \
+            TEST_##test_name test;                                                                     \
+            test.test();                                                                               \
+        }                                                                                              \
+        static int _##fixture##_##test_name##_register = _register_test(&_ignore_test);   \
+        void TEST_##test_name::test(void )
+
     #define REGISTER_TEST(test_name) \
         _register_test(_##test_name##_register)
 
@@ -125,6 +147,15 @@ void _check_less_than_float(const char* file, int line, double left, double righ
 void _check_greater_than_float(const char* file, int line, double left, double right);
 void _check_less_than_equal_float(const char* file, int line, double left, double right);
 void _check_greater_than_equal_float(const char* file, int line, double left, double right);
+
+/* string */
+#define CHECK_EQUAL_STRING(expected, actual) \
+    _check_equal_string(__FILE__, __LINE__, expected, actual)
+#define CHECK_NOT_EQUAL_STRING(expected, actual) \
+    _check_not_equal_string(__FILE__, __LINE__, expected, actual)
+
+void _check_equal_string(const char* file, int line, const char* expected, const char* actual);
+void _check_not_equal_string(const char* file, int line, const char* expected, const char* actual);
 
 
 /** @brief Runs all tests. Returns number of failed tests (0 for success).
