@@ -46,13 +46,6 @@ typedef void (test_func_t)(void);
         static int _##fixture##_##test_name##_register = _register_test(&_ignore_test);   \
         void TEST_##test_name::test(void )
 
-    #define REGISTER_TEST(test_name) \
-        _register_test(_##test_name##_register)
-
-    #define TEST_MODULE(module_name)    \
-        void REGISTER_##module_name(void);  \
-        void REGISTER_##module_name(void)
-
     extern "C" { // Use C linkage
 #else
     #define TEST(test_name) \
@@ -71,6 +64,10 @@ typedef void (test_func_t)(void);
     #define TEST_MODULE(module_name)    \
         void REGISTER_##module_name(void);  \
         void REGISTER_##module_name(void)
+
+    #define REGISTER_MODULE(module_name) \
+        extern void REGISTER_##module_name(void); \
+        REGISTER_##module_name();
 #endif
 
 int _register_test(test_func_t* func);
@@ -163,12 +160,16 @@ void _check_not_equal_string(const char* file, int line, const char* expected, c
  */
 int run_all_tests(int argc, const char* argv[]);
 
-#define RUN_ALL_TESTS(argc, argv, test_arg)         \
+#define RUN_ALL_TESTS(argc, argv, test_arg, register_func) \
     do {                                            \
         int _ii;                                    \
         for(_ii=0;_ii<argc;++_ii)                   \
-            if(strcmp(argv[_ii], test_arg) == 0)    \
+            if(strcmp(argv[_ii], test_arg) == 0) {  \
+                test_func_t* _reg = register_func;  \
+                if(_reg)                            \
+                    _reg();                         \
                 return run_all_tests(argc, argv);   \
+            }                                       \
     } while(__LINE__ == -1)
 
 #ifdef __cplusplus
