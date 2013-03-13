@@ -63,3 +63,19 @@ TEST(CheckString)
     CHECK_EQUAL_STRING(a, b);
     CHECK_NOT_EQUAL_STRING(a, c);
 }
+
+struct TestFixture
+{
+    TestFixture()
+        : test_int(42)
+    {
+    }
+    ~TestFixture() {}
+
+    int test_int;
+};
+
+TEST_FIXTURE(TestFixture, MakeAFixture)
+{
+    CHECK_EQUAL(42, test_int);
+}

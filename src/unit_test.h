@@ -24,6 +24,28 @@ typedef void (test_func_t)(void);
         static int _##test_name##_register = _register_test(&_ignore_test); \
         void TEST_##test_name(void)
 
+    #define TEST_FIXTURE(fixture, test_name)                                                           \
+        struct TEST_##test_name : public fixture {                                                     \
+            void test(void);                                                                           \
+        };                                                                                             \
+        static void TEST_##fixture##_##test_name(void) {                                               \
+            TEST_##test_name test;                                                                     \
+            test.test();                                                                               \
+        }                                                                                              \
+        static int _##fixture##_##test_name##_register = _register_test(&TEST_##fixture##_##test_name); \
+        void TEST_##test_name::test(void )
+
+    #define IGNORE_TEST_FIXTURE(fixture, test_name)                                                    \
+        struct TEST_##test_name : public fixture {                                                     \
+            void test(void);                                                                           \
+        };                                                                                             \
+        static void TEST_##fixture##_##test_name(void) {                                               \
+            TEST_##test_name test;                                                                     \
+            test.test();                                                                               \
+        }                                                                                              \
+        static int _##fixture##_##test_name##_register = _register_test(&_ignore_test);   \
+        void TEST_##test_name::test(void )
+
     #define REGISTER_TEST(test_name) \
         _register_test(_##test_name##_register)
 
