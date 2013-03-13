@@ -4,8 +4,12 @@
 #include "unit_test.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef _WIN32
+    #include <inttypes.h>
+#endif
 
 #ifndef PRId64
     #define PRId64 "ld"
