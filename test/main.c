@@ -6,6 +6,7 @@
 
 /* Internal functions
  */
+DECLARE_MODULE(unit_test);
 static void register_tests(void)
 {
     REGISTER_MODULE(unit_test);

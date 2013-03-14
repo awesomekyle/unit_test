@@ -62,12 +62,14 @@ typedef void (test_func_t)(void);
         _register_test(_##test_name##_register)
 
     #define TEST_MODULE(module_name)    \
-        void REGISTER_##module_name(void);  \
-        void REGISTER_##module_name(void)
+        void MODULE_##module_name(void);  \
+        void MODULE_##module_name(void)
+
+    #define DECLARE_MODULE(module_name) \
+        extern void MODULE_##module_name(void)
 
     #define REGISTER_MODULE(module_name) \
-        extern void REGISTER_##module_name(void); \
-        REGISTER_##module_name();
+        MODULE_##module_name();
 #endif
 
 int _register_test(test_func_t* func);
