@@ -52,7 +52,7 @@ void _fail(const char* file, int line, const char* format, ...)
     va_list args;
     char buffer[1024];
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format, args);
+    vsprintf(buffer, format, args);
     va_end(args);
     printf("\n"ERROR_FORMAT"%s\n", file, line, buffer);
     _current_result = kResultFail;
