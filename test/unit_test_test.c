@@ -45,7 +45,7 @@ TEST(CheckPointerEqual)
 }
 TEST(CheckFloatEqual)
 {
-    CHECK_EQUAL_FLOAT(33.9234f, 33.9233f);
+    CHECK_EQUAL_FLOAT(33.923564f, 33.923563f);
     CHECK_NOT_EQUAL(-56.233f, 56.985f);
 }
 TEST(CheckFloatLTGT)

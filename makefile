@@ -19,7 +19,7 @@ TEST_SRCS = test/main.c \
 #
 # Compilation control
 #
-INCLUDES 	+= 	-Isrc
+INCLUDES 	+= 	-Isrc -I/usr/local/include
 DEFINES		+=
 
 C_STD	= -std=c89
@@ -30,6 +30,8 @@ WARNINGS	+=	 -Wall -Wextra -pedantic -Wshadow -Wpointer-arith \
 CPPFLAGS += -MMD -MP $(DEFINES) $(INCLUDES) $(WARNINGS) -g
 CFLAGS += $(CPPFLAGS) -Wmissing-declarations -Wstrict-prototypes -Wnested-externs -Wmissing-prototypes $(C_STD)
 CXXFLAGS += $(CPPFLAGS) $(CXX_STD)
+
+LDFLAGS += -L/usr/local/lib -llua
 
 #############################################
 OBJECTS = $(patsubst %.cpp,%.o,$(patsubst %.c,%.o,$(SRCS)))
