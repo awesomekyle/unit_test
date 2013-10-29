@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdarg.h>
 
+#define LUA_TESTS 0
+
 #ifdef _MSC_VER
     #pragma warning(disable:4127) /* Conditional expression is constant (the do-while) */
 #endif

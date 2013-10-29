@@ -9,13 +9,15 @@
 #include <time.h>
 #include <dirent.h>
 #include <math.h>
-#ifdef __cplusplus
-    #include <lua.hpp>
-#else
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-#endif
+#if LUA_TESTS
+    #ifdef __cplusplus
+        #include <lua.hpp>
+    #else
+        #include <lua.h>
+        #include <lualib.h>
+        #include <lauxlib.h>
+    #endif
+#endif /* LUA_TESTS */
 #ifndef _WIN32
     #include <unistd.h>
     #include <inttypes.h>
@@ -54,11 +56,12 @@ static int  _num_tests_passed = 0;
 static int  _num_tests_failed = 0;
 static int  _num_tests_ignored = 0;
 static test_result_t _current_result = kResultPass;
-static struct lua_State*    _L = NULL;
-static char _current_lua_test_file[1024];
 
 /* Internal functions
  */
+#if LUA_TESTS
+static struct lua_State*    _L = NULL;
+static char _current_lua_test_file[1024];
 static const char* _get_ext(const char* filename)
 {
     const char* end = filename + strlen(filename);
@@ -234,6 +237,7 @@ static int _ignore_lua_test(lua_State* L)
     return 0;
     (void)sizeof(L);
 }
+#endif /* LUA_TESTS */
 
 /* External functions
  */
@@ -382,6 +386,8 @@ void _ignore_test(void)
 
 int run_all_tests(int argc, const char* argv[])
 {
+    int ii;
+    #if LUA_TESTS
     const char script[] =
     "function run_tests()\n"\
     "    for key, val in pairs(_G) do\n"\
@@ -399,7 +405,7 @@ int run_all_tests(int argc, const char* argv[])
     "    end\n"\
     "end";
     char cwd[1024] = {0};
-    int ii, result;
+    int result;
     DIR *dir = NULL;
     struct dirent *ent = NULL;
 
@@ -418,7 +424,7 @@ int run_all_tests(int argc, const char* argv[])
     lua_pushcfunction(_L, _ignore_lua_test);
     lua_setglobal(_L, "_ignore_lua_test");
     luaL_dostring(_L, script);
-
+    #endif /* LUA_TESTS */
 
     printf("------------------------------------------------------------");
 
@@ -437,6 +443,7 @@ int run_all_tests(int argc, const char* argv[])
         }
     }
 
+    #if LUA_TESTS
     /* Lua tests */
     getcwd(cwd, sizeof(cwd));
     if ((dir = opendir (".")) != NULL) {
@@ -465,12 +472,13 @@ int run_all_tests(int argc, const char* argv[])
         /* could not open directory */
         perror ("");
     }
+    lua_close(_L);
 
+    #endif /* LUA_TESTS */
 
     printf("\n------------------------------------------------------------\n");
     printf("%d failed, %d passed, %d ignored, %d total\n",
             _num_tests_failed, _num_tests_passed, _num_tests_ignored, _num_tests);
-    lua_close(_L);
 
 
     return _num_tests_failed;
