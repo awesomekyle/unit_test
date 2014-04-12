@@ -25,6 +25,7 @@
     #include <direct.h>
     #define snprintf sprintf_s
     #define getcwd _getcwd
+    #define vsnprintf(buff, count, format, args) vsnprintf_s(buff, count, count, format, args)
 #endif
 
 #ifndef PRId64
@@ -40,7 +41,7 @@
 /* Constants
  */
 enum {MAX_TESTS = 4096};
-static const float EPSILON = 0.00001f;
+static const float EPSILON = 0.0001f;
 
 typedef enum {
     kResultPass,
@@ -57,11 +58,12 @@ static int  _num_tests_failed = 0;
 static int  _num_tests_ignored = 0;
 static test_result_t _current_result = kResultPass;
 
-/* Internal functions
- */
 #if LUA_TESTS
 static struct lua_State*    _L = NULL;
 static char _current_lua_test_file[1024];
+
+/* Internal functions
+ */
 static const char* _get_ext(const char* filename)
 {
     const char* end = filename + strlen(filename);
@@ -387,47 +389,46 @@ void _ignore_test(void)
 int run_all_tests(int argc, const char* argv[])
 {
     int ii;
-    #if LUA_TESTS
-    const char script[] =
-    "function run_tests()\n"\
-    "    for key, val in pairs(_G) do\n"\
-    "        if \"function\" == type(val) then\n"\
-    "            if string.find(key, \"_Test\") then\n"\
-    "                if string.find(key, \"Ignore_\") then\n"\
-    "                    _ignore_lua_test()\n"\
-    "                else\n"\
-    "                    _G[key]()\n"\
-    "                end\n"\
-    "                    _count_lua_test()\n"\
-    "                _G[key] = nil\n"\
-    "            end\n"\
-    "        end\n"\
-    "    end\n"\
-    "end";
-    char cwd[1024] = {0};
-    int result;
-    DIR *dir = NULL;
-    struct dirent *ent = NULL;
-
-    /* Seed a random number */
-    srand((uint32_t)time(NULL));
-
     /* Create Lua state */
-    _L = luaL_newstate();
-    luaL_openlibs(_L);
-    for(ii=0; ii<(int)sizeof(_lua_test_methods)/(int)sizeof(_lua_test_methods[0])-1; ++ii) {
-        lua_pushcfunction(_L, _lua_test_methods[ii].func);
-        lua_setglobal(_L, _lua_test_methods[ii].name);
-    }
-    lua_pushcfunction(_L, _count_lua_test);
-    lua_setglobal(_L, "_count_lua_test");
-    lua_pushcfunction(_L, _ignore_lua_test);
-    lua_setglobal(_L, "_ignore_lua_test");
-    luaL_dostring(_L, script);
+    #if LUA_TESTS
+        const char script[] =
+        "function run_tests()\n"\
+        "    for key, val in pairs(_G) do\n"\
+        "        if \"function\" == type(val) then\n"\
+        "            if string.find(key, \"_Test\") then\n"\
+        "                if string.find(key, \"Ignore_\") then\n"\
+        "                    _ignore_lua_test()\n"\
+        "                else\n"\
+        "                    _G[key]()\n"\
+        "                end\n"\
+        "                    _count_lua_test()\n"\
+        "                _G[key] = nil\n"\
+        "            end\n"\
+        "        end\n"\
+        "    end\n"\
+        "end";
+        char cwd[1024] = {0};
+        int result;
+        DIR *dir = NULL;
+        struct dirent *ent = NULL;
+        char* error = NULL;
+        _L = luaL_newstate();
+        luaL_openlibs(_L);
+        for(ii=0; ii<(int)sizeof(_lua_test_methods)/(int)sizeof(_lua_test_methods[0])-1; ++ii) {
+            lua_pushcfunction(_L, _lua_test_methods[ii].func);
+            lua_setglobal(_L, _lua_test_methods[ii].name);
+        }
+        lua_pushcfunction(_L, _count_lua_test);
+        lua_setglobal(_L, "_count_lua_test");
+        lua_pushcfunction(_L, _ignore_lua_test);
+        lua_setglobal(_L, "_ignore_lua_test");
+        luaL_dostring(_L, script);
     #endif /* LUA_TESTS */
 
     printf("------------------------------------------------------------");
 
+    /* Seed a random number */
+    srand((uint32_t)time(NULL));
 
     /* C++ tests */
     for(ii=0;ii<_num_tests;++ii) {
@@ -443,38 +444,42 @@ int run_all_tests(int argc, const char* argv[])
         }
     }
 
-    #if LUA_TESTS
     /* Lua tests */
-    getcwd(cwd, sizeof(cwd));
-    if ((dir = opendir (".")) != NULL) {
-        /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL) {
-            const char* str = ent->d_name;
-            const char* ext = _get_ext(ent->d_name);
-            if(ext == NULL)
-                continue;
-            if(strcmp(ext, "lua") == 0) {
-                snprintf(_current_lua_test_file,  sizeof(_current_lua_test_file), "%s/%s", cwd, str);
-                _current_result = kResultPass;
+    #if LUA_TESTS
+        error = getcwd(cwd, sizeof(cwd));
+        if(error == NULL)
+            perror("Could not get current working directory");
+        if ((dir = opendir (".")) != NULL) {
+            /* print all the files and directories within directory */
+            while ((ent = readdir (dir)) != NULL) {
+                const char* str = ent->d_name;
+                const char* ext = _get_ext(ent->d_name);
+                if(ext == NULL)
+                    continue;
+                if(strlen(str) >= 2 && str[0] == '.' && str[1] == '_') /* Ignore OS X ._* files*/
+                    continue;
+                if(strcmp(ext, "lua") == 0) {
+                    snprintf(_current_lua_test_file,  sizeof(_current_lua_test_file), "%s/%s", cwd, str);
+                    _current_result = kResultPass;
 
-                result = luaL_loadfile(_L, str);
-                if(result) {
-                    printf("\n%s\n", lua_tostring(_L, -1));
-                } else {
-                    luaL_dofile(_L, str);
-                    lua_getglobal(_L, "run_tests");
-                    lua_pcall(_L, 0, 0, 0);
+                    result = luaL_loadfile(_L, str);
+                    if(result) {
+                        printf("\n%s\n", lua_tostring(_L, -1));
+                    } else {
+                        luaL_dofile(_L, str);
+                        lua_getglobal(_L, "run_tests");
+                        lua_pcall(_L, 0, 0, 0);
+                    }
                 }
             }
+            closedir (dir);
+        } else {
+            /* could not open directory */
+            perror ("");
         }
-        closedir (dir);
-    } else {
-        /* could not open directory */
-        perror ("");
-    }
-    lua_close(_L);
-
+        lua_close(_L);
     #endif /* LUA_TESTS */
+
 
     printf("\n------------------------------------------------------------\n");
     printf("%d failed, %d passed, %d ignored, %d total\n",

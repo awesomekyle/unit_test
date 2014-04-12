@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 
-#define LUA_TESTS 0
+#define LUA_TESTS 1
 
 #ifdef _MSC_VER
     #pragma warning(disable:4127) /* Conditional expression is constant (the do-while) */
@@ -221,6 +221,19 @@ void _check_not_equal_string(const char* file, int line, const char* expected, c
     #undef FAIL
     #define FAIL(m) \
         XCTFail(m)
+
+    
+    #define TEST_MODULE(module_name)    \
+        void MODULE_##module_name(void);  \
+        void MODULE_##module_name(void)
+
+    #define DECLARE_MODULE(module_name) \
+        extern void MODULE_##module_name(void)
+
+    #define REGISTER_MODULE(module_name) \
+        test##module_name();
+    
+    #define REGISTER_TEST(test_name)
 
     /* bool */
     #undef CHECK_TRUE
